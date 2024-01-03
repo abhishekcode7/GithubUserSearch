@@ -1,14 +1,21 @@
 package com.example.githubuser
 
+import android.annotation.SuppressLint
+import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.githubuser.dataClasses.User
+import com.example.githubuser.recyclerView.rvAdapter
 import com.example.githubuser.viewModels.MainActivityViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -44,8 +51,17 @@ class MainActivity : AppCompatActivity() {
         searchButton?.setOnClickListener {
             viewModel?.fetchUser(editText?.text.toString())
         }
+
+        followerButton?.setOnClickListener {
+            viewModel?.fetchUserFollowers(editText?.text.toString())
+        }
+
+        followingButton?.setOnClickListener {
+            viewModel?.fetchUserFollowing(editText?.text.toString())
+        }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setupObservers() {
         viewModel?.userLiveData?.observe(this) {
             usernameView?.text = it.username
@@ -60,5 +76,21 @@ class MainActivity : AppCompatActivity() {
             followingButton?.text = "following " + it.following.toString()
             avatarView?.let { it1 -> Glide.with(this).load(it.avatarUrl).into(it1) }
         }
+
+        viewModel?.userListLiveData?.observe(this){
+            showDialog(it)
+        }
+    }
+
+    private fun showDialog(list:List<User>) {
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.dialog_layout)
+        dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog.setCancelable(true)
+
+        val rv = dialog.findViewById<RecyclerView>(R.id.rv)
+        rv.layoutManager = LinearLayoutManager(this)
+        rv.adapter = rvAdapter(list)
+        dialog.show()
     }
 }
