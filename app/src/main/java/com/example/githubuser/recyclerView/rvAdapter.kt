@@ -1,12 +1,15 @@
 package com.example.githubuser.recyclerView
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.githubuser.MainActivity
 import com.example.githubuser.R
 import com.example.githubuser.dataClasses.User
 
@@ -24,6 +27,11 @@ class rvAdapter(private val mList: List<User>) : RecyclerView.Adapter<rvAdapter.
 
         Glide.with(holder.imageView.context).load(user.avatarUrl).into(holder.imageView)
         holder.textView.text = user.username
+        holder.itemView.setOnClickListener {
+            val intent = Intent(holder.itemView.context,MainActivity::class.java)
+            intent.putExtra(MainActivity.SEARCH_USER,user.username)
+            holder.itemView.context.startActivity(intent)
+        }
     }
 
     override fun getItemCount(): Int {

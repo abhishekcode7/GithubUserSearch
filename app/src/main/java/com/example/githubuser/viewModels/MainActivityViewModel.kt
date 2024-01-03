@@ -1,14 +1,22 @@
 package com.example.githubuser.viewModels
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.githubuser.dataClasses.User
 import com.example.githubuser.repositories.MainActivityRepo
 
-class MainActivityViewModel : ViewModel() {
+class MainActivityViewModel(private val context:Context) : ViewModel() {
 
-    val repo = MainActivityRepo()
+    class Factory(private val context: Context):ViewModelProvider.Factory{
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return MainActivityViewModel(context) as T
+        }
+    }
+
+    private val repo = MainActivityRepo(context)
 
     fun fetchUser(userName: String) {
         repo.fetchUser(userName)
@@ -27,6 +35,10 @@ class MainActivityViewModel : ViewModel() {
     }
 
     val userListLiveData: LiveData<List<User>> = Transformations.map(repo.userListLiveData) {
+        it
+    }
+
+    val noUserFoundLD: LiveData<Boolean> = Transformations.map(repo.noUserFoundLD){
         it
     }
 }

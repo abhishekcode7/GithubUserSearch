@@ -22,5 +22,8 @@ data class User(
     val followers: Int,
     @Expose
     @SerializedName("following")
-    val following: Int
+    val following: Int,
+    @Expose
+    @SerializedName("message")
+    val message: String
 ) : Serializable
